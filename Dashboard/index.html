@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Taeparak 0.1</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+        crossorigin="anonymous">
+
+    <style>
+        #map {
+            height: 100%;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-fluid">
+        <!--<div class="row" style="padding-top: 30px;">
+            <div class="col col-lg-12" style="text-align: center;">
+                <h2><span style="color: #17A1A4">Teparak</span> : <span style="font-weight: 300;">Phu Kradueng National Park</span></h2>
+                <button class="btn btn-primary" onclick="ssTest()">TEST</button>
+            </div>
+        </div>-->
+        <div class="row" style="padding-top: 20px;">
+            <div class="col col-lg-12">
+                <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+            </div>
+        </div>
+        <div class="row" style="padding-top: 20px; padding-bottom: 20px;">
+            <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12">
+                <div class="card" style="height: 500px;">
+                    <div id="map"></div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+                <div class="row" id="devices_body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- jQuery first, then Tether, then Bootstrap JS. -->
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+        crossorigin="anonymous"></script>
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="http://momentjs.com/downloads/moment.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+
+    <script>
+        // This example requires the Places library. Include the libraries=places
+        // parameter when you first load the API. For example:
+        // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+        var devices = [];
+
+        var currentDevice = '';
+        var map;
+        var infowindow;
+        var markers = [];
+        function initMap() {
+            var pyrmont = { lat: 0, lng: 0 };
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: pyrmont,
+                zoom: 10
+            });
+
+            infowindow = new google.maps.InfoWindow();
+
+            $(function () {
+                // devices = [{
+                //     ID: '1',
+                //     Location: '13.206542,101.031067',
+                // }];
+                // UpdateMap();
+            });
+
+        }
+
+        function UpdateMap() {
+            // console.log('Update Map : devices =>', devices);
+            setMapOnAll(null);
+
+            for (var i = 0; i < devices.length; i++) {
+                // console.log('devices[i]=>', devices[i]);
+                createMarker(devices[i]);
+            }
+        }
+
+        function createMarker(place) {
+            // console.log('create marker => ', place);
+            var placeLoc = place.Location;
+            var pos = { lat: parseFloat(place.Location.split(',')[0]), lng: parseFloat(place.Location.split(',')[1]) };
+
+            // if (place.Status == 1) {
+                var fireMarker = "https://lh3.googleusercontent.com/-_y7XiZk2_S0/WV80e0jnwXI/AAAAAAAAEmM/fQ1_dStZ1o0xCXoM1zO4fu3dp2JJxujiQCL0BGAYYCw/h64/2017-07-07.png";
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: pos,
+                    icon: fireMarker,
+                    label: place.ID
+                });
+                markers.push(marker);
+                map.setCenter(pos);
+            // } else if (place.Status == 0) {
+            //     var marker = new google.maps.Marker({
+            //         map: map,
+            //         position: pos,
+            //         label: place.ID
+            //     });
+            //     markers.push(marker);
+            //     map.setCenter(pos);
+            // }
+            
+        }
+        // Sets the map on all markers in the array.
+        function setMapOnAll(map) {
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setMap(map);
+            }
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB0OZz2NDqnTXJ6XkyvwpiSF0RAbFMns3w&libraries=places&callback=initMap"
+        async defer></script>
+
+
+    <script>
+        var chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'container',
+                defaultSeriesType: 'spline'//,
+                // events: {
+                //     load: requestData
+                // }
+            },
+            title: {
+                text: 'tpr_001 Active'
+            },
+            xAxis: {
+                type: 'datetime',
+                // tickPixelInterval: 150,
+                // maxZoom: 20 * 1000
+            },
+            yAxis: {
+                // minPadding: 0.2,
+                //maxPadding: 0.2,
+                title: {
+                    text: '',
+                    margin: 0
+                }
+            },
+            series: [{
+                name: 'อุณหภูมิ',
+                data: []
+            }, {
+                name: 'ความชื้นสัมพัทธ์',
+                data: []
+            }]
+        });
+
+        var config = {
+            apiKey: "AIzaSyABOxyvZi5xQEGNYw7Ul9AFZmpRuU89aPk",
+            authDomain: "teparak-d048a.firebaseapp.com",
+            databaseURL: "https://teparak-d048a.firebaseio.com",
+            projectId: "teparak-d048a",
+            storageBucket: "teparak-d048a.appspot.com",
+            messagingSenderId: "621473067920"
+        };
+        firebase.initializeApp(config);
+
+        var dbRefHead = firebase.database().ref().child('devices');
+        dbRefHead.on('child_added', snap => {
+            console.log('snap ... ');
+            // console.log('snap => ', snap.val());
+            let dataSnapHead = "teparak_" + snap.val();
+            // console.log('snap => dataSnapHead ', dataSnapHead);
+
+            var dbRef = firebase.database().ref().child(dataSnapHead);
+            var date = new Date();
+            var formattedDate = parseInt(moment(date).format('YYYYMMDDHHMMss'));
+            dbRef.limitToLast(10).on('child_added', snap => {
+                // dbRef.orderByChild("ReportDate").limitToLast(20).on('child_added', snap => {
+                // console.log('snap => ', snap.val());
+                // console.log('snap *');
+                let dataSnap = snap.val();
+                var series = chart.series[0],
+                    shift = series.data.length > 20;
+                let ReportDate = moment(snap.val().ReportDate, "YYYYMMDDHHmmss");
+
+                //console.log("ReportDate => ", ReportDate);
+                if (currentDevice == dataSnap.ID) {
+                    chart.series[0].addPoint([new Date(), dataSnap.T], true, shift);
+                    chart.series[1].addPoint([new Date(), dataSnap.H], true, shift);
+
+                    // if (dataSnap.Status == 1) {
+                    var l1 = chart.series[0].points.length;
+                    var p1 = chart.series[0].points[l1 - 1];
+                    // p1.update({
+                    //     marker: {
+                    //         symbol: 'url(https://lh3.googleusercontent.com/-_y7XiZk2_S0/WV80e0jnwXI/AAAAAAAAEmM/fQ1_dStZ1o0xCXoM1zO4fu3dp2JJxujiQCL0BGAYYCw/h64/2017-07-07.png)'
+                    //     }
+                    // });
+
+                    var l2 = chart.series[1].points.length;
+                    var p2 = chart.series[1].points[l2 - 1];
+                    // p2.update({
+                    //     marker: {
+                    //         symbol: 'url(https://lh3.googleusercontent.com/-_y7XiZk2_S0/WV80e0jnwXI/AAAAAAAAEmM/fQ1_dStZ1o0xCXoM1zO4fu3dp2JJxujiQCL0BGAYYCw/h64/2017-07-07.png)'
+                    //     }
+                    // });
+                    // }
+                }
+
+
+                // console.log('devices LENGTH => ', devices);
+                if (devices.length < 1) {
+
+                    devices.push(dataSnap);
+                    currentDevice = dataSnap.ID;
+                    // console.log('************** device FIRST => ', devices);
+                    setTimeout(function () {
+                        UpdateMap();
+                    }, 100);
+
+                } else {
+                    var check = -1;
+                    var i = 0;
+                    devices.forEach(a => {
+                        if (a.ID == dataSnap.ID) {
+                            check = i;
+                        }
+                        i++;
+                    });
+
+
+
+
+
+                    if (check == -1) {
+                        // console.log('==> found new device ***', check);
+                        devices.push(dataSnap);
+                        UpdateMap();
+                    } else {
+                        // console.log('==> update devices data ... devices.length =>', devices.length, devices);
+                        // var check = devices.indexOf(d => d.ID == dataSnap.ID);
+
+
+                        var org = devices[check];
+
+                        if (org && org.Location != dataSnap.Location) {
+                            devices[check].Location = dataSnap.Location;
+                            UpdateMap();
+                            //console.log('==> found new device UpdateMap ***', org);
+                        }
+                        if (check > -1) {
+                            devices[check].T = dataSnap.T;
+                            devices[check].H = dataSnap.H;
+                            //console.log('==> update', devices[check], check);
+                        }
+
+
+                    }
+
+
+                }
+                gen_deviceBody();
+
+            });
+        });
+
+
+
+
+
+
+        function gen_deviceBody() {
+
+
+            // clear
+            $("#devices_body").empty();
+
+            for (var i = 0; i < devices.length; i++) {
+                //console.log('append devicees *****', devices[i]);
+
+                var H = devices[i].H;// + " Status : " + devices[i].Status;
+                var T = devices[i].T;
+                var ID = devices[i].ID;
+                var Status = devices[i].Status;
+                var reportDate = devices[i].ReportDate;
+                var classView = '';
+
+                if (devices[i].Status == 0) {
+                    classView = 'card';
+                } else if (devices[i].Status == 1) {
+                    classView = 'card-danger';
+                }
+
+                var template = "<div class='col-lg-12' style='padding-bottom: 10px;'><div class='" + classView + "'><div class='card-header'>   <div class='row'><div class='col-lg-6 text-left'>" + ID + "</div> <div class='col-lg-6 text-right'> <button class='btn btn-primary' onclick='ActiveDevice(\"" + ID + "\")'>Active</button> </div> </div>  </div><div class='card-block'><p class='card-text'>อุณหภูมิ : <span> " + T + "</span></p><p class='card-text'>ความชื้นสัมพัทธ์ : <span>" + H + "</span></p><p class='card-text'>Report Date : <span>" + new Date() + "</span></p></div></div></div>";
+                var d = $(template);
+
+                $("#devices_body").append(template);
+            }
+
+
+        }
+
+
+        function ActiveDevice(activeDevice) {
+            // console.log('actve device : ID => ', activeDevice);
+            currentDevice = activeDevice;
+
+            chart = new Highcharts.Chart({
+                chart: {
+                    renderTo: 'container',
+                    defaultSeriesType: 'spline'//,
+                    // events: {
+                    //     load: requestData
+                    // }
+                },
+                title: {
+                    text: activeDevice + ' Active'
+                },
+                xAxis: {
+                    type: 'datetime',
+                    // tickPixelInterval: 150,
+                    // maxZoom: 20 * 1000
+                },
+                yAxis: {
+                    // minPadding: 0.2,
+                    //maxPadding: 0.2,
+                    title: {
+                        text: '',
+                        margin: 0
+                    }
+                },
+                series: [{
+                    name: 'อุณหภูมิ',
+                    data: []
+                }, {
+                    name: 'ความชื้นสัมพัทธ์',
+                    data: []
+                }]
+            });
+        }
+    </script>
+
+</body>
+
+</html>
